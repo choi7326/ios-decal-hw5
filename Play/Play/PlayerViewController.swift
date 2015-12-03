@@ -130,7 +130,24 @@ class PlayerViewController: UIViewController {
         let track = tracks[currentIndex]
         let url = NSURL(string: "https://api.soundcloud.com/tracks/\(track.id)/stream?client_id=\(clientID)")!
         // FILL ME IN
-    
+        if let curItem = player.currentItem {
+            if sender.selected == true {
+                player.pause()
+                sender.selected = false
+            } else {
+                player.play()
+                sender.selected = true
+            }
+        } else {
+            let song = AVPlayerItem(URL: url)
+            player = AVPlayer(playerItem: song)
+            player.play()
+            sender.selected = true
+            print(player.currentItem!.status == .ReadyToPlay)
+            print(player.currentItem!.status == .Failed)
+            print(player.currentItem!.status == .Unknown)
+        }
+        print("playOrPauseTrack called")
     }
     
     /* 
@@ -140,7 +157,26 @@ class PlayerViewController: UIViewController {
      * Remember to update the currentIndex
      */
     func nextTrackTapped(sender: UIButton) {
-    
+        let path = NSBundle.mainBundle().pathForResource("Info", ofType: "plist")
+        let clientID = NSDictionary(contentsOfFile: path!)?.valueForKey("client_id") as! String
+        if currentIndex + 1 < tracks.count {
+            print("in here")
+            currentIndex = currentIndex + 1
+            let track = tracks[currentIndex]
+            let url = NSURL(string: "https://api.soundcloud.com/tracks/\(track.id)/stream?client_id=\(clientID)")!
+            let song = AVPlayerItem(URL: url)
+            player = AVPlayer(playerItem: song)
+            if playPauseButton.selected == true {
+                print("play")
+                player.play()
+            }
+            print (currentIndex)
+            print(player.currentItem!.status == .ReadyToPlay)
+            print(player.currentItem!.status == .Failed)
+            print(player.currentItem!.status == .Unknown)
+        }
+        loadTrackElements()
+        print("nextTrackTapped called")
     }
 
     /*
@@ -154,7 +190,30 @@ class PlayerViewController: UIViewController {
      */
 
     func previousTrackTapped(sender: UIButton) {
-    
+        let path = NSBundle.mainBundle().pathForResource("Info", ofType: "plist")
+        let clientID = NSDictionary(contentsOfFile: path!)?.valueForKey("client_id") as! String
+        if CMTimeGetSeconds(player.currentTime()) > 3 {
+            player.seekToTime(CMTimeMakeWithSeconds(0.0, 60000))
+            print ("here")
+        } else {
+            if currentIndex - 1 >= 0 {
+                currentIndex = currentIndex - 1
+                let track = tracks[currentIndex]
+                let url = NSURL(string: "https://api.soundcloud.com/tracks/\(track.id)/stream?client_id=\(clientID)")!
+                let song = AVPlayerItem(URL: url)
+                player = AVPlayer(playerItem: song)
+                if playPauseButton.selected == true {
+                    print("play")
+                    player.play()
+                }
+                print (currentIndex)
+                print(player.currentItem!.status == .ReadyToPlay)
+                print(player.currentItem!.status == .Failed)
+                print(player.currentItem!.status == .Unknown)
+            }
+        }
+        loadTrackElements()
+        print("previousTrackTapped called")
     }
     
     
